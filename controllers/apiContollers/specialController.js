@@ -362,7 +362,7 @@ exports.getAllPostsByUserInCurrentBusinessInDept = async(req, res) => {
                 })
             })
             success_res_with_data( res,
-                `All Posts by ${req.params.username} in ${req.params.department} department in 
+                `All Posts by ${req.params.username} in ${req.params.department_name} department in 
                 ${req.params.current_business_name}`,
                 posts
             );

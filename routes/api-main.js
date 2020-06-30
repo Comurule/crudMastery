@@ -54,8 +54,6 @@ router.get('/profiles/:profile_name/users', getAllUsersByProfile);
 //Get all Posts by Category Name
 router.get('/categories/:category_name/posts', getAllPostsByCategory);
 
-//Get all Posts by Category name
-router.get('/categories/:category_name/posts', getAllPostsByCategory);
 
 //Get all Posts by a User in a Current Bsiness
 router.get(
