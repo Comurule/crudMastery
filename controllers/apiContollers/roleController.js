@@ -9,114 +9,102 @@
 /**
  * Module dependencies.
  */
-var models = require('../../models');
-
-// Display role create form on GET.
-exports.getRoleCreate = function(req, res, next) {
-    // create role GET controller logic here 
-    res.render('pages/content', {
-        title: 'Create a Role Record',
-        functioName: 'GET ROLE CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders role create form successfully")
-};
+const models = require('../../models');
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse')
 
 // Handle role create on POST.
-exports.postRoleCreate = function(req, res, next) {
-    // create role POST controller logic here
-    // If an role gets created successfully, we just redirect to roles list
-    // no need to render a page
-    models.Role.create({
-        role_name: req.body.role_name
-    }).then(function() {
-        console.log("Role created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/roles');
-    });
+exports.postRoleCreate = async (req, res, next) => {
+    try {
+        const role = await models.Role.create({
+            role_name: req.body.role_name
+        });
+
+        //Success Response
+        success_res_with_data( 
+            res, 'Role created Successfully', role
+        )
+            console.log("Role created successfully");
+            
+    // check if there was an error during post creation
+    } catch (error) {
+        error_res( res, error );
+    }   
 };
 
 // Display role delete form on GET.
-exports.getRoleDelete = function(req, res, next) {
-    models.Role.destroy({
-        where: {
-            id: req.params.role_id
-        }
-    }).then(function() {
-        res.redirect('/main/roles');
-        console.log("Role deleted successfully");
-    });
-};
-
- 
-
-// Display role update form on GET.
-exports.getRoleUpdate = function(req, res, next) {
-    // Find the post you want to update
-    console.log("ID is " + req.params.role_id);
-    models.Role.findByPk(
-        req.params.role_id
-    ).then(function(role) {
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Role',
-            role: role,
-            functioName: 'GET ROLE UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Role update get successful");
-    });
-};
-
-exports.postRoleUpdate = function(req, res, next) {
-    console.log("ID is " + req.params.role_id);
-    models.Role.update(
-        // Values to update
-        {
-            role_name: req.body.role_name
-        }, { // Clause
+exports.getRoleDelete = async (req, res, next) => {
+    try {
+        await models.Role.destroy({
             where: {
                 id: req.params.role_id
             }
-        }
-    ).then(function() {
+        })
+        
+        //Success Response
+        success_res( res, 'Role deleted Successfully');
 
-        res.redirect("/main/roles");
+        console.log("Role deleted successfully");
+
+    //check for errors while deleting the role
+    } catch (error) {
+         error_res( res, error );
+    }
+};
+
+exports.postRoleUpdate = async (req, res, next) => {
+    try {
+         console.log("ID is " + req.params.role_id);
+        const role = await models.Role.update(
+            // Values to update
+            {
+                role_name: req.body.role_name
+            }, { // Clause
+                where: {
+                    id: req.params.role_id
+                }
+            }
+        );
+
+        //Success Response
+        success_res_with_data( res, 'Role updated Successfully', role );
         console.log("Role updated successfully");
-    });
+    
+    } catch (error) {
+        error_res( res, error );
+    }  
 };
 
 // Display detail page for a specific role.
-exports.getRoleDetails = async function(req, res, next) {
+exports.getRoleDetails = async (req, res, next) => {
+    try {
+        const categories = await models.Category.findAll();
 
-    const categories = await models.Category.findAll();
-
-    models.Role.findByPk(
-        req.params.role_id 
-    ).then(function(role) {
-        console.log(role);
-        res.render('pages/content', {
-            title: 'Role Details',
-            categories: categories,
-            functioName: 'GET ROLE DETAILS',
-            role: role,
-            layout: 'layouts/detail'
-        });
-        console.log("Role details renders successfully");
-    });
+        const role = await models.Role.findByPk( req.params.role_id )
+        
+            //Succeess Response
+            success_res_with_data( res, 'Role details', role )
+            
+            console.log("Role details renders successfully");
+    } catch (error) {
+        error_res( res, error );
+    }
+    
+    
 };
 
 // Display list of all roles.
-exports.getRoleList = async function(req, res, next) {
-
-    models.Role.findAll().then(async function(roles) {
+exports.getRoleList = async (req, res, next) => {
+    try {
+        const roles = await models.Role.findAll()
         console.log("rendering role list");
-        res.render('pages/content', {
-            title: 'Role List',
-            roles: roles,
-            functioName: 'GET ROLE LIST',
-            layout: 'layouts/list'
-        });
+
+        //Success Response
+        success_res_with_data( res, 'Role List', roles );
         console.log("Roles list renders successfully");
-    });
+        
+    } catch (error) {
+        error_res( res, error );
+    }
 };

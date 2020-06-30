@@ -9,70 +9,51 @@
 /**
  * Module dependencies.
  */
- var models = require('../../models');
-
+ const models = require('../../models');
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
  
 
-// Display Current Business create form on GET.
-exports.getCurrentBusinessCreate = function(req, res, next) {
-    // create Current Business GET controller logic here 
-    res.render('pages/content', {
-        title: 'Create a Current Business Record',
-        functioName: 'GET CURRENT BUSINESS CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders Current Business create form successfully")
-};
-
 // Handle department create on POST.
-exports.postCurrentBusinessCreate = function(req, res, next) {
-    // create Current Business POST controller logic here
-    // If a Current Business gets created successfully, we just redirect to Current Businesses list
-    // no need to render a page
-    models.CurrentBusiness.create({
+exports.postCurrentBusinessCreate = async (req, res, next) => {
+    try {
+        const currentBusiness = await models.CurrentBusiness.create({
         current_business_name: req.body.current_business_name
-    }).then(function() {
+    })
+
+        //Success Response
+        success_res_with_data( res, 'Current Business created successfully', currentBusiness );
         console.log("Current Business created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/current-businesses');
-    });
+        
+        // check if there was an error during post creation    
+    } catch (error) {
+        error_res( res, error );
+    };
 };
 
 // Display Current Business delete form on GET.
-exports.getCurrentBusinessDelete = function(req, res, next) {
-    models.CurrentBusiness.destroy({
-        where: {
-            id: req.params.current_business_id
-        }
-    }).then(function() {
-        res.redirect('/main/current-businesses');
-        console.log("Department deleted successfully");
-    });
+exports.getCurrentBusinessDelete = async (req, res, next) => {
+    try {
+        await models.CurrentBusiness.destroy({
+            where: {
+                id: req.params.current_business_id
+            }
+        })
+            
+            //Success Response
+            success_res( res, 'Current Business deleted successfully.' );
+            console.log("Current Business deleted successfully");
+    
+    } catch (error) {
+        error_res( res, error );
+    };
 };
 
- 
-
-// Display CUrrent Business update form on GET.
-exports.getCurrentBusinessUpdate = function(req, res, next) {
-    // Find the post you want to update
-    console.log("ID is " + req.params.current_business_id);
-    models.CurrentBusiness.findByPk(
-        req.params.current_business_id
-    ).then(function(currentBusiness) {
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Current Business',
-            currentBusiness: currentBusiness,
-            functioName: 'GET CURRENT BUSINESS UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Current Business update get successful");
-    });
-};
-
-exports.postCurrentBusinessUpdate = function(req, res, next) {
-    console.log("ID is " + req.params.current_business_id);
-    models.CurrentBusiness.update(
+exports.postCurrentBusinessUpdate = async (req, res, next) => {
+    try {
+        console.log("ID is " + req.params.current_business_id);
+    const business = await models.CurrentBusiness.update(
         // Values to update
         {
             current_business_name: req.body.current_business_name
@@ -81,44 +62,47 @@ exports.postCurrentBusinessUpdate = function(req, res, next) {
                 id: req.params.current_business_id
             }
         }
-    ).then(function() {
+    )
 
-        res.redirect("/main/current-businesses");
+        //Success Response
+        success_res_with_data( res, 'Current Business updated successfully', business );
         console.log("Current Business updated successfully");
-    });
+
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display detail page for a specific Current Business.
-exports.getCurrentBusinessDetails = async function(req, res, next) {
+exports.getCurrentBusinessDetails = async (req, res, next) => {
+    try {
+        const categories = await models.Category.findAll();
 
-    const categories = await models.Category.findAll();
-
-    models.CurrentBusiness.findByPk(
-        req.params.current_business_id 
-    ).then(function(currentBusiness) {
-        console.log(currentBusiness);
-        res.render('pages/content', {
-            title: 'Current Business Details',
-            categories: categories,
-            functioName: 'GET CURRENT BUSINESS DETAILS',
-            currentBusiness: currentBusiness,
-            layout: 'layouts/detail'
-        });
-        console.log("Current Business details renders successfully");
-    });
+        const business = await models.CurrentBusiness.findByPk(
+            req.params.current_business_id 
+        );
+            
+            //Success Response
+            success_res_with_data( res, 'Current Business details', business );
+            console.log("Current Business details renders successfully");
+            
+    } catch (error) {
+        error_res( res, error );
+    } 
 };
 
 // Display list of all roles.
-exports.getCurrentBusinessList = async function(req, res, next) {
-
-    models.CurrentBusiness.findAll().then(async function(currentBusinesses) {
+exports.getCurrentBusinessList = async (req, res, next) => {
+    try {
+        const businesses = await models.CurrentBusiness.findAll();
         console.log("rendering Current Business list");
-        res.render('pages/content', {
-            title: 'Current Business List',
-            currentBusinesses: currentBusinesses,
-            functioName: 'GET CURRENT BUSINESS LIST',
-            layout: 'layouts/list'
-        });
+       
+       //Success Response
+       success_res_with_data( res, 'Current Business List', businesses );
         console.log("Current Business list renders successfully");
-    });
+    
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };

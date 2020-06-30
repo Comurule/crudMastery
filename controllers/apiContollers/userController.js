@@ -9,40 +9,20 @@
 /**
  * Module dependencies.
  */
-var models = require('../../models');
-
-// Display User create form on GET.
-exports.getUserCreate = async (req, res, next) =>{
-    
-    // create User GET controller logic here 
-    const permissions = await models.Permission.findAll();
-    const departments = await models.Department.findAll();
-    const roles = await models.Role.findAll();
-    const profiles = await models.Profile.findAll();
-    const currentBusinesses = await models.CurrentBusiness.findAll();
-    
-    res.render('pages/content', {
-        title: 'Create an User Record',
-        permissions: permissions,
-        departments: departments,
-        roles: roles,
-        profiles: profiles,
-        currentBusinesses: currentBusinesses,
-        functioName: 'GET USER CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders User create form successfully")
-};
+const models = require('../../models');
+const{ 
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
 
 // Handle User create on POST.
-exports.postUserCreate = async function(req, res, next) {
+exports.postUserCreate = async(req, res, next) => {
     
     // create User POST controller logic here
     // If an User gets created successfully, we just redirect to Users list
     // no need to render a page
   
-try {
-       var user = await models.User.create({
+    try {
+       const user = await models.User.create({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email,
@@ -55,10 +35,10 @@ try {
 
         console.log("The user id " + user.id);
         
-        var actionType = 'create';
+        const actionType = 'create';
         
         // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-        var addPermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
+        const addPermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
         
         if(!addPermissions){
             return res.status(422).json({ status: false,  error: 'Error occured while adding Permissions'});
@@ -67,7 +47,9 @@ try {
         console.log('User Created Successfully');
     
          // everything done, now redirect....to user created page.
-        res.redirect('/main/user/' + user.id);
+         success_res_with_data(
+             res, 'User created successfully', user
+         )
         
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
@@ -75,97 +57,33 @@ try {
         // remove the user that was created so we don't have a user without permission.
         models.User.destroy({ where: {id: user.id}});
         // now render error page
-        res.render('pages/error', {
-        title: 'Error',
-        message: error,
-        error: error
-      });
+        error_res( res, error );
+        
     }
 };
 
 // Display User delete form on GET.
-exports.getUserDelete = function(req, res, next) {
-    models.User.destroy({
-        where: {
-            id: req.params.user_id
-        }
-    }).then(function() {
+exports.getUserDelete = (req, res, next) => {
+    try {
+        models.User.destroy({
+            where: {
+                id: req.params.user_id
+            }
+        }).then(() => {
 
-        res.redirect('/main/users');
-        console.log("User deleted successfully");
-    });
+            //Success reponse
+            success_res(
+                res, 'User account deleted successfully.'
+            )
+            console.log("User deleted successfully");
+        });    
+    } catch (e) {
+        error_res( res, e )
+    }
+    
 };
  
- 
-
-// Display User update form on GET.
-exports.getUserUpdate = async function(req, res, next) {
-    // Find the post you want to update
-    const permissions = await models.Permission.findAll();
-    const departments = await models.Department.findAll();
-    const roles = await models.Role.findAll();
-    const profiles = await models.Profile.findAll();
-    const currentBusinesses = await models.CurrentBusiness.findAll();
-    console.log("ID is " + req.params.user_id);
-    models.User.findByPk(
-        req.params.user_id,
-        {
-            include:
-            [
-                        {
-                            model: models.Department,
-                            attributes: ['id', 'department_name']
-                        },
-                        {
-                            model: models.Role,
-                            attributes: ['id', 'role_name']
-                        },
-                        {
-                            model: models.Profile,
-                            attributes: ['id', 'profile_name']
-                        },
-                        {
-                            model: models.CurrentBusiness,
-                            attributes: ['id', 'current_business_name']
-                        },
-                        {
-                            model: models.Permission,
-                            as: 'permissions',
-                            attributes: ['id', 'permission_name']
-                        } 
-                        
-            ]
-        }
-    ).then(function(user) {
-        // renders a post form
-        console.log('This is user.Permissions ' + user.permissions[0].id);
-        console.log('This is user.CurrentBusiness ' + user.CurrentBusiness);
-        console.log('This is the user department ' + user.Department.department_name);
-        console.log('This is the user profile ' + user.Profile.id);
-        console.log('This is the user role ' + user.Role.role_name);
-        
-        // for (let i = 0; i < permissions.length; i++) {
-        //     if (user.permissions.indexOf(permissions[i].id) > -1) {
-        //         permissions[i].checked='true';
-        //     }
-        // }
-                
-        res.render('pages/content', {
-            title: 'Update User',
-            user: user,
-            permissions: permissions,
-            departments: departments,
-            roles: roles,
-            profiles: profiles,
-            currentBusinesses: currentBusinesses,
-            functioName: 'GET USER UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("User update get successful");
-    });
-};
-
-exports.postUserUpdate = async function(req, res, next) {
+exports.postUserUpdate = async(req, res, next) => {
     console.log("ID is " + req.params.user_id);
     console.log("first_name is " +req.body.first_name);
     console.log("last_name is " + req.body.last_name);
@@ -196,14 +114,14 @@ exports.postUserUpdate = async function(req, res, next) {
         );
         
         
-        var user = await models.User.findByPk(req.params.user_id);
+        const user = await models.User.findByPk(req.params.user_id);
         
         console.log('this is user from update ' + user + 'id' + user.id);
         
-        var actionType = 'update';
+        const actionType = 'update';
          
         // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-        var updatePermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
+        const updatePermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
         
         if(!updatePermissions){
             return res.status(422).json({ status: false,  error: 'Error occured while adding Permissions'});
@@ -212,93 +130,91 @@ exports.postUserUpdate = async function(req, res, next) {
         console.log('User Updated Successfully');
     
          // everything done, now redirect....to user created page.
-        res.redirect('/main/user/' + user.id);
+         success_res_with_data(
+             res, 'User account updated successfully.', user
+         )
 
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
-        res.render('pages/error', {
-        title: 'Error',
-        message: error,
-        error: error
-      });
+        error_res( res, error)
+        
     }
 };
 
 // Display detail page for a specific User.
-exports.getUserDetails = async function(req, res, next) {
+exports.getUserDetails = async (req, res, next) =>{
+    try {
+        const permissions = await models.Permission.findAll();
+        const departments = await models.Department.findAll();
+        const roles = await models.Role.findAll();
+        const profiles = await models.Profile.findAll();
+        const currentBusinesses = await models.CurrentBusiness.findAll();
 
-    const permissions = await models.Permission.findAll();
-    const departments = await models.Department.findAll();
-    const roles = await models.Role.findAll();
-    const profiles = await models.Profile.findAll();
-    const currentBusinesses = await models.CurrentBusiness.findAll();
+        const user = await models.User.findByPk(
+            req.params.user_id, {
+                include:
+                [
+                    {
+                        model: models.Department 
+                    },
+                    {
+                        model: models.Role
+                    },
+                    {
+                        model: models.Profile
+                    },
+                    {   model: models.Post},
+                    {   model: models.CurrentBusiness},
+                    {
+                        model: models.Permission,
+                        as: 'permissions',
+                        attributes: ['id', 'permission_name']
+                    } 
+                            
+                ]
+            }
+        )
+            console.log(user);
 
-    models.User.findByPk(
-        req.params.user_id, {
-            include:
-            [
-                        {
-                            model: models.Department 
-                        },
-                        {
-                            model: models.Role
-                        },
-                        {
-                            model: models.Profile
-                        },
-                        {   model: models.Post},
-                        {   model: models.CurrentBusiness},
-                        {
-                            model: models.Permission,
-                            as: 'permissions',
-                            attributes: ['id', 'permission_name']
-                        } 
-                        
-            ]
-        }
-    ).then(function(user) {
-        console.log(user);
-        res.render('pages/content', {
-            title: 'User Details',
-            permissions: permissions,
-            departments: departments,
-            roles: roles,
-            profiles: profiles,
-            currentBusinesses: currentBusinesses,
-            functioName: 'GET USER DETAILS',
-            user: user,
-            layout: 'layouts/detail'
-        });
-        console.log("User details renders successfully");
-    });
+            //Success Response
+            success_res_with_data( 
+                res, 'User Account Details', user 
+            );
+            console.log("User details renders successfully");    
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };
 
 // Display list of all Users.
-exports.getUserList = async function(req, res, next) {
-
-    models.User.findAll().then(async function(users) {
+exports.getUserList = async(req, res, next) => {
+    try {
+        const users = models.User.findAll();
         console.log("rendering user list");
-        res.render('pages/content', {
-            title: 'User List',
-            users: users,
-            functioName: 'GET USER LIST',
-            layout: 'layouts/list'
-        });
+
+        //Success Response
+        success_res_with_data( res, 'User List', users );
+        
         console.log("Users list renders successfully");
-    });
+      
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };
 
  
  
-
-async function CreateOrUpdatePermissions(req, res, user, actionType) {
+//I need to study this....
+exports.CreateOrUpdatePermissions = async (req, res, user, actionType) => {
 
     let permissionList = req.body.permissions;
     
     console.log(permissionList);
     
-    console.log('type of permission list is ' + typeof permissionList);
+    console.log('type of permission list is ' + typeof(permissionList));
     
     // I am checking if permissionList exist
     if (permissionList) { 

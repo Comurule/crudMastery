@@ -82,14 +82,8 @@ router.get(
 
 // USER ROUTES
 
-// GET USER CREATE
-router.get('/user/create', userController.getUserCreate); 
-
 // POST USER CREATE
 router.post('/user/create', userController.postUserCreate); 
-
-// GET USER UPDATE
-router.get('/user/:user_id/update', userController.getUserUpdate); 
 
 // POST USER UPDATE
 router.post('/user/:user_id/update', userController.postUserUpdate); 
@@ -104,14 +98,9 @@ router.get('/users', userController.getUserList);
 router.get('/user/:user_id', userController.getUserDetails); 
 
 // ROLE ROUTES
-router.get('/role/create', roleController.getRoleCreate); 
 
 // POST ROLE CREATE
 router.post('/role/create', roleController.postRoleCreate); 
-
-// GET ROLE UPDATE
-// role/:role_id/update
-router.get('/role/:role_id/update', roleController.getRoleUpdate); 
 
 // POST ROLE UPDATE
 router.post('/role/:role_id/update', roleController.postRoleUpdate); 
@@ -127,13 +116,9 @@ router.get('/role/:role_id', roleController.getRoleDetails);
 
 
 // DEPARTMENT ROUTES
-router.get('/department/create', departmentController.getDepartmentCreate); 
 
 // POST PROFILE CREATE
 router.post('/department/create', departmentController.postDepartmentCreate); 
-
-// GET PROFILE UPDATE
-router.get('/department/:department_id/update', departmentController.getDepartmentUpdate); 
 
 // POST PROFILE UPDATE
 router.post('/department/:department_id/update', departmentController.postDepartmentUpdate); 
@@ -150,14 +135,8 @@ router.get('/department/:department_id', departmentController.getDepartmentDetai
 
 // PROFILE ROUTES
 
-// GET PROFILE CREATE
-router.get('/profile/create', profileController.getProfileCreate); 
-
 // POST PROFILE CREATE
 router.post('/profile/create', profileController.postProfileCreate); 
-
-// GET PROFILE UPDATE
-router.get('/profile/:profile_id/update', profileController.getProfileUpdate); 
 
 // POST PROFILE UPDATE
 router.post('/profile/:profile_id/update', profileController.postProfileUpdate); 
@@ -172,14 +151,8 @@ router.get('/profiles', profileController.getProfileList);
 router.get('/profile/:profile_id', profileController.getProfileDetails);
 
 
-// CURRENT BUSINESS ROUTES
-router.get('/current-business/create', currentBusinessController.getCurrentBusinessCreate); 
-
 // POST PROFILE CREATE
 router.post('/current-business/create', currentBusinessController.postCurrentBusinessCreate); 
-
-// GET PROFILE UPDATE
-router.get('/current-business/:current_business_id/update', currentBusinessController.getCurrentBusinessUpdate); 
 
 // POST PROFILE UPDATE
 router.post('/current-business/:current_business_id/update', currentBusinessController.postCurrentBusinessUpdate); 
@@ -196,14 +169,8 @@ router.get('/current-business/:current_business_id', currentBusinessController.g
 
 // CATEGORY ROUTES
 
-// GET POST CREATE
-router.get('/category/create', categoryController.getCategoryCreate); 
-
 // POST POST CREATE
 router.post('/category/create', categoryController.postCategoryCreate); 
-
-// GET POST UPDATE
-router.get('/category/:category_id/update', categoryController.getCategoryUpdate); 
 
 // POST POST UPDATE
 router.post('/category/:category_id/update', categoryController.postCategoryUpdate); 
@@ -220,14 +187,8 @@ router.get('/category/:category_id', categoryController.getCategoryDetails);
 
 // PERMISSION ROUTES
 
-// GET PERMISSION CREATE
-router.get('/permission/create', permissionController.getPermissionCreate); 
-
 // POST PERMISSION CREATE
 router.post('/permission/create', permissionController.postPermissionCreate); 
-
-// GET PERMISSION UPDATE
-router.get('/permission/:permission_id/update', permissionController.getPermissionUpdate); 
 
 // POST PERMISSION UPDATE
 router.post('/permission/:permission_id/update', permissionController.postPermissionUpdate); 
@@ -244,14 +205,8 @@ router.get('/permission/:permission_id', permissionController.getPermissionDetai
 
 // POST ROUTES
 
-// GET POST CREATE
-router.get('/post/create', postController.getPostCreate); 
-
 // POST POST CREATE
 router.post('/post/create', postController.postPostCreate); 
-
-// GET POST UPDATE
-router.get('/post/:post_id/update', postController.getPostUpdate); 
 
 // POST POST UPDATE
 router.post('/post/:post_id/update', postController.postPostUpdate); 

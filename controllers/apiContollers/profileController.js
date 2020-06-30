@@ -9,114 +9,100 @@
 /**
  * Module dependencies.
  */
-var models = require('../../models');
-
-// Display profile create form on GET.
-exports.getProfileCreate = function(req, res, next) {
-    // create profile GET controller logic here 
-    res.render('pages/content', {
-        title: 'Create a Profile Record',
-        functioName: 'GET PROFILE CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders profile create form successfully")
-};
+const models = require('../../models');
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
 
 // Handle profile create on POST.
-exports.postProfileCreate = function(req, res, next) {
-    // create profile POST controller logic here
-    // If an profile gets created successfully, we just redirect to Profiles list
-    // no need to render a page
-    models.Profile.create({
-        profile_name: req.body.profile_name
-    }).then(function() {
+exports.postProfileCreate = async (req, res, next) => {
+    try {
+        const profile = await models.Profile.create({
+            profile_name: req.body.profile_name
+        });
         console.log("Profile created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/profiles');
-    });
+
+        //Success Response
+        success_res_with_data( res, 'Profile created successfully', profile );
+
+         // check if there was an error during post creation
+    } catch (error) {
+        error_res( res, error )
+    }   
 };
 
 // Display profile delete form on GET.
-exports.getProfileDelete = function(req, res, next) {
-    models.Profile.destroy({
-        where: {
-            id: req.params.profile_id
-        }
-    }).then(function() {
-        res.redirect('/main/profiles');
-        console.log("Profile deleted successfully");
-    });
-};
-
- 
-
-// Display profile update form on GET.
-exports.getProfileUpdate = function(req, res, next) {
-    // Find the post you want to update
-    console.log("ID is " + req.params.profile_id);
-    models.Profile.findByPk(
-        req.params.profile_id
-    ).then(function(profile) {
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Profile',
-            profile: profile,
-            functioName: 'GET PROFILE UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Profile update get successful");
-    });
-};
-
-exports.postProfileUpdate = function(req, res, next) {
-    console.log("ID is " + req.params.profile_id);
-    models.Profile.update(
-        // Values to update
-        {
-            profile_name: req.body.profile_name
-        }, { // Clause
+exports.getProfileDelete = async (req, res, next) => {
+    try {
+        await models.Profile.destroy({
             where: {
                 id: req.params.profile_id
             }
-        }
-    ).then(function() {
+        });
+            //Success Response
+            success_res( res, 'Profile deleted successfully.' );
+            console.log("Profile deleted successfully");
 
-        res.redirect("/main/profiles");
-        console.log("Profile updated successfully");
-    });
+    } catch (error) {
+        error_res( res, error );
+    }
+};
+
+exports.postProfileUpdate = async (req, res, next) => {
+    try {
+        console.log("ID is " + req.params.profile_id);
+        const profile = models.Profile.update(
+            // Values to update
+            {
+                profile_name: req.body.profile_name
+            }, { // Clause
+                where: {
+                    id: req.params.profile_id
+                }
+            }
+        )
+
+        //Success Response
+        success_res_with_data( res, 'Profile updated successfully', profile )
+            console.log("Profile updated successfully");
+
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };
 
 // Display detail page for a specific profile.
-exports.getProfileDetails = async function(req, res, next) {
+exports.getProfileDetails = async (req, res, next) => {
+    try {
+        const categories = await models.Category.findAll();
 
-    const categories = await models.Category.findAll();
-
-    models.Profile.findByPk(
-        req.params.profile_id 
-    ).then(function(profile) {
-        console.log(profile);
-        res.render('pages/content', {
-            title: 'Profile Details',
-            categories: categories,
-            functioName: 'GET PROFILE DETAILS',
-            profile: profile,
-            layout: 'layouts/detail'
-        });
-        console.log("Profile details renders successfully");
-    });
+        const profile = await models.Profile.findByPk( req.params.profile_id );
+            
+            console.log(profile);
+            
+            //Success Response
+            success_res_with_data( res, 'Profile details', profile )
+            
+            console.log("Profile details renders successfully");
+    
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display list of all profiles.
-exports.getProfileList = async function(req, res, next) {
+exports.getProfileList = async (req, res, next) => {
+    try {
+        const profiles = await models.Profile.findAll();
 
-    models.Profile.findAll().then(async function(profiles) {
         console.log("rendering profile list");
-        res.render('pages/content', {
-            title: 'Profile List',
-            profiles: profiles,
-            functioName: 'GET PROFILE LIST',
-            layout: 'layouts/list'
-        });
+        
+        //Success Response
+        success_res_with_data( res, 'Profile List', profiles );
         console.log("Profiles list renders successfully");
-    });
+
+    } catch (error) {
+        error_res( res, error );
+    }
 };

@@ -9,115 +9,103 @@
 /**
  * Module dependencies.
  */
-var models = require('../../models');
+const models = require('../../models');
 
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
 
-// Display department create form on GET.
-exports.getDepartmentCreate = function(req, res, next) {
-    // create department GET controller logic here 
-    res.render('pages/content', {
-        title: 'Create a Department Record',
-        functioName: 'GET DEPARTMENT CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders department create form successfully")
-};
 
 // Handle department create on POST.
-exports.postDepartmentCreate = function(req, res, next) {
-    // create Department POST controller logic here
-    // If a Department gets created successfully, we just redirect to Departments list
-    // no need to render a page
-    models.Department.create({
-        department_name: req.body.department_name
-    }).then(function() {
-        console.log("Department created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/departments');
-    });
+exports.postDepartmentCreate = async (req, res, next) => {
+    try {
+        const department = await models.Department.create({
+            department_name: req.body.department_name
+        })
+
+        //Success Response
+        success_res_with_data( res, 'Department created successfully', department );
+            console.log("Department created successfully");
+            
+        // check if there was an error during post creation    
+    } catch (error) {
+        error_res( res, error );
+    }
+        
 };
 
 // Display Department delete form on GET.
-exports.getDepartmentDelete = function(req, res, next) {
-    models.Department.destroy({
+exports.getDepartmentDelete = async(req, res, next) => {
+    try {
+        await models.Department.destroy({
         where: {
             id: req.params.department_id
         }
-    }).then(function() {
-        res.redirect('/main/departments');
+    })
+
+        //Success Response
+        success_res( res, 'Department deleted successfully' );
         console.log("Department deleted successfully");
-    });
+
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
- 
-
-// Display Department update form on GET.
-exports.getDepartmentUpdate = function(req, res, next) {
-    // Find the post you want to update
-    console.log("ID is " + req.params.department_id);
-    models.Department.findByPk(
-        req.params.department_id
-    ).then(function(department) {
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Department',
-            department: department,
-            functioName: 'GET DEPARTMENT UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Department update get successful");
-    });
-};
-
-exports.postDepartmentUpdate = function(req, res, next) {
-    console.log("ID is " + req.params.department_id);
-    models.Department.update(
-        // Values to update
-        {
-            department_name: req.body.department_name
-        }, { // Clause
-            where: {
-                id: req.params.department_id
+exports.postDepartmentUpdate = async (req, res, next) => {
+    try {
+        console.log("ID is " + req.params.department_id);
+        const department = await models.Department.update(
+            // Values to update
+            {
+                department_name: req.body.department_name
+            }, { // Clause
+                where: {
+                    id: req.params.department_id
+                }
             }
-        }
-    ).then(function() {
+        )
 
-        res.redirect("/main/departments");
-        console.log("Department updated successfully");
-    });
+            //Success Response
+            success_res_with_data( res, 'Department updated successfully', department );
+            console.log("Department updated successfully");
+
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };
 
 // Display detail page for a specific Department.
-exports.getDepartmentDetails = async function(req, res, next) {
-
+exports.getDepartmentDetails = async (req, res, next) => {
+    try {
+        
     const categories = await models.Category.findAll();
 
-    models.Department.findByPk(
+    const department = await models.Department.findByPk(
         req.params.department_id 
-    ).then(function(department) {
-        console.log(department);
-        res.render('pages/content', {
-            title: 'Department Details',
-            categories: categories,
-            functioName: 'GET DEPARTMENT DETAILS',
-            department: department,
-            layout: 'layouts/detail'
-        });
+    )
+        
+        //Success Response
+        success_res_with_data( res, 'Department details', department );
         console.log("Department details renders successfully");
-    });
+
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display list of all roles.
-exports.getDepartmentList = async function(req, res, next) {
-
-    models.Department.findAll().then(async function(departments) {
+exports.getDepartmentList = async (req, res, next) => {
+    try {
+        const departments = await models.Department.findAll()
         console.log("rendering Department list");
-        res.render('pages/content', {
-            title: 'Department List',
-            departments: departments,
-            functioName: 'GET DEPARTMENT LIST',
-            layout: 'layouts/list'
-        });
+
+        //Success Response
+        success_res_with_data( res, 'Department List', departments );
         console.log("Departments list renders successfully");
-    });
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };

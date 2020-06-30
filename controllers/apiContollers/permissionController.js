@@ -9,112 +9,102 @@
 /**
  * Module dependencies.
  */
-var models = require('../../models');
+const models = require('../../models');
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
 
 
-// Display Permission create form on GET.
-exports.getPermissionCreate = function(req, res, next) {
-    // create Permission GET controller logic here 
-    res.render('pages/content', {
-        title: 'Create a Permission Record',
-        functioName: 'GET PERMISSION CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("renders Permission create form successfully")
-};
 
 // Handle Permission create on POST.
-exports.postPermissionCreate = function(req, res, next) {
-    // create Permission POST controller logic here
-    // If a Permission gets created successfully, we just redirect to Permissions list
-    // no need to render a page
-    models.Permission.create({
-        permission_name: req.body.permission_name
-    }).then(function() {
-        console.log("Permission created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/permissions');
-    });
+exports.postPermissionCreate = async (req, res, next) => {
+    try {
+         const permission = await models.Permission.create({
+            permission_name: req.body.permission_name
+        })
+
+            //success Response
+            success_res_with_data( res, 'Permission created successfully', permission )
+            console.log("Permission created successfully");
+
+        // check if there was an error during post creation 
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display Permission delete form on GET.
-exports.getPermissionDelete = function(req, res, next) {
-    models.Permission.destroy({
-        where: {
-            id: req.params.permission_id
-        }
-    }).then(function() {
-        res.redirect('/main/permissions');
-        console.log("Permission deleted successfully");
-    });
+exports.getPermissionDelete = async (req, res, next) => {
+    try {
+        await models.Permission.destroy({
+            where: {
+                id: req.params.permission_id
+            }
+        })
+            
+            //success Response
+            success_res( res, 'Permission deleted successfully' );
+            console.log("Permission deleted successfully");
+    
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 };
 
  
 
-// Display Permission update form on GET.
-exports.getPermissionUpdate = function(req, res, next) {
-    // Find the Permission you want to update
-    console.log("ID is " + req.params.permission_id);
-    models.Permission.findByPk(
-        req.params.permission_id
-    ).then(function(permission) {
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Permission',
-            permission: permission,
-            functioName: 'GET PERMISSION UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Permission update get successful");
-    });
-};
-
-exports.postPermissionUpdate = function(req, res, next) {
-    console.log("ID is " + req.params.permission_id);
-    models.Permission.update(
-        // Values to update
-        {
-            permission_name: req.body.permission_name
-        }, { // Clause
-            where: {
-                id: req.params.permission_id
+exports.postPermissionUpdate = async (req, res, next) => {
+    try {
+        console.log("ID is " + req.params.permission_id);
+        const permission = await models.Permission.update(
+            // Values to update
+            {
+                permission_name: req.body.permission_name
+            }, { // Clause
+                where: {
+                    id: req.params.permission_id
+                }
             }
-        }
-    ).then(function() {
+        )
 
-        res.redirect("/main/permissions");
-        console.log("Permission updated successfully");
-    });
+            //Success Response
+            success_res_with_data( res, 'Permission updated successfully', permission );
+            console.log("Permission updated successfully");
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display detail page for a specific Permission.
-exports.getPermissionDetails = async function(req, res, next) {
+exports.getPermissionDetails = async (req, res, next) => {
+    try {
+        
+    const permission = await models.Permission.findByPk(
+            req.params.permission_id 
+        )
+            
+            //Success Response
+            success_res_with_data( res, 'Permission details', permission );
+            
+            console.log("Permission details renders successfully"); 
 
-    models.Permission.findByPk(
-        req.params.permission_id 
-    ).then(function(permission) {
-        console.log(permission);
-        res.render('pages/content', {
-            title: 'Permission Details',
-            functioName: 'GET PERMISSION DETAILS',
-            permission: permission,
-            layout: 'layouts/detail'
-        });
-        console.log("Permission details renders successfully");
-    });
+    } catch (error) {
+        error_res( res, error );
+    }
 };
 
 // Display list of all roles.
-exports.getPermissionList = async function(req, res, next) {
-
-    models.Permission.findAll().then(async function(permissions) {
+exports.getPermissionList = async (req, res, next) => {
+    try {
+    const permissions = await models.Permission.findAll()
         console.log("rendering Permission list");
-        res.render('pages/content', {
-            title: 'Permission List',
-            permissions: permissions,
-            functioName: 'GET PERMISSION LIST',
-            layout: 'layouts/list'
-        });
+        
+        //Success Response
+        success_res_with_data( res, 'Permission List', permissions );
+
         console.log("Permissions list renders successfully");
-    });
+    } catch (error) {
+        error_res( res, error );
+    }
 };
