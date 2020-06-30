@@ -1,0 +1,16 @@
+<div class="col-sm-8">    
+    <div class="">
+        <h2>Posts In <%= data.category.category_name %></h2>
+        <ol>
+        <% data.posts.forEach((post) => { %>
+                <li>
+                    <h4><a href="/main/post/<%= post.id %>"><%= post.post_title %></a></h4>
+                    <p>
+                        The main body of the post:<br/> <%= post.post_body %>
+                    </p>
+                </li>
+            <br/>
+        <% }); %>
+        </ol>
+    </div>
+</div>

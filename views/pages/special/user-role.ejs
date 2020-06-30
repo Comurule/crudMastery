@@ -1,0 +1,16 @@
+<div class="col-sm-8">    
+    <div class="">
+        <h2>Users In <%= data.role.role_name %></h2>
+        <ol>
+        <% data.users.forEach((user) => { %>
+                <li>
+                    <h4><a href="/main/user/<%= user.id %>"><%= user.username %></a></h4>
+                    <p>
+                        Full Name: <%= user.first_name %> <%= user.last_name %>
+                    </p>
+                </li>
+            <br/>
+        <% }); %>
+        </ol>
+    </div>
+</div>

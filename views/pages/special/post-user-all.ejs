@@ -1,0 +1,23 @@
+<div class="col-sm-8">    
+    <div class="">
+        <h2>Posts By <%= data.user.username %></h2>
+        <p>
+            Full Name: <%= data.user.first_name %> <%= data.user.last_name %><br/>
+            Role: <%= data.role.role_name %><br/>
+            Profile: <%= data.profile.profile_name %><br/>
+            Department: <%= data.department.department_name %><br/>
+            Business: <%= data.business.current_business_name %><br/>
+        </p>
+        <ol>
+        <% data.posts.forEach((post) => { %>
+                <li>
+                    <h4><a href="/main/post/<%= post.id %>"><%= post.post_title %></a></h4>
+                    <p>
+                        The main body of the post:<br/> <%= post.post_body %>
+                    </p>
+                </li>
+            <br/>
+        <% }); %>
+        </ol>
+    </div>
+</div>
