@@ -36,7 +36,7 @@ exports.getUserCreate = async function(req, res, next) {
 
 // Handle User create on POST.
 exports.postUserCreate = async function(req, res, next) {
-    
+    console.log(req.body);
     // create User POST controller logic here
     // If an User gets created successfully, we just redirect to Users list
     // no need to render a page
@@ -358,6 +358,7 @@ async function CreateOrUpdatePermissions(req, res, user, actionType) {
                 }
                  
                 // now add new permission after removal
+                console.log(permission)
                 await user.addPermission(permission);
                 
             });

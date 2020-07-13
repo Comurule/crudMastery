@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var {Role} = require('../models');
 
 // Display role create form on GET.
 exports.getRoleCreate = function(req, res, next) {
@@ -27,7 +27,7 @@ exports.postRoleCreate = function(req, res, next) {
     // create role POST controller logic here
     // If an role gets created successfully, we just redirect to roles list
     // no need to render a page
-    models.Role.create({
+    Role.create({
         role_name: req.body.role_name
     }).then(function() {
         console.log("Role created successfully");
@@ -109,7 +109,7 @@ exports.getRoleDetails = async function(req, res, next) {
 // Display list of all roles.
 exports.getRoleList = async function(req, res, next) {
 
-    models.Role.findAll().then(async function(roles) {
+    Role.findAll().then(async function(roles) {
         console.log("rendering role list");
         res.render('pages/content', {
             title: 'Role List',

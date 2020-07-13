@@ -1,24 +1,10 @@
-var Post = require('../models/post');
-var models = require('../models');
+// var Post = require('../models/post');
+const models = require('../../models');
 
-var async = require('async');
-
-// Display post create form on GET.
-exports.getPostCreate = async function(req, res, next) {
-    
-    // create User GET controller logic here 
-    const users = await models.User.findAll();
-    const categories = await models.Category.findAll();
-    
-    res.render('pages/content', {
-        title: 'Create a Post Record',
-        users: users,
-        categories: categories,
-        functioName: 'GET POST CREATE',
-        layout: 'layouts/detail'
-    });
-    console.log("Post form renders successfully")
-};
+const async = require('async');
+const {
+    error_res, error_res_with_msg, success_res, success_res_with_data
+} = require('../../utils/apiResponse');
 
 
 // Handle post create on POST.
@@ -62,7 +48,7 @@ exports.postPostCreate = async function( req, res, next) {
             ]
         }
     );
- 
+            if(!user) { error_res_with_msg( res, 'User not found!' )};
 
     console.log('This is the user details making the post' + user);
     
@@ -107,226 +93,178 @@ exports.postPostCreate = async function( req, res, next) {
         
         console.log('Post Created Successfully');
         
-        // everything done, now redirect....to post listing.
-        res.redirect('/main/post/' + post.id);
+        success_res_with_data( res, 'Post created successfully', post );
         
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
         // not sure if we need to detsory the post? shall we?
         models.Post.destroy({ where: {id: post.id}});
-        res.render('pages/error', {
-        title: 'Error',
-        message: error,
-        error: error
-      });
+        error_res( res, error );
     }
 };
 
 // Display post delete form on GET.
-exports.getPostDelete = async function(req, res, next) {
-    // find the post
-    const post = await models.Post.findByPk(req.params.post_id);
+exports.getPostDelete = async (req, res, next) => {
+    try {
+        // find the post
+        const post = await models.Post.findByPk(req.params.post_id);
 
-    // Find and remove all associations (maybe not necessary with new libraries - automatically remove. Check Cascade)
-    //const categories = await post.getCategories();
-    //post.removeCategories(categories);
+        // Find and remove all associations (maybe not necessary with new libraries - automatically remove. Check Cascade)
+        //const categories = await post.getCategories();
+        //post.removeCategories(categories);
 
-    // delete post 
-    models.Post.destroy({
-        // find the post_id to delete from database
-        where: {
-            id: req.params.post_id
-        }
-    }).then(function() {
-        // If an post gets deleted successfully, we just redirect to posts list
-        // no need to render a page
-        res.redirect('/main/posts');
-        console.log("Post deleted successfully");
-    });
-};
-
-
-// Display post update form on GET.
-exports.getPostUpdate = async function(req, res, next) {
-    // Find the post you want to update
-    console.log("ID is " + req.params.post_id);
-    const categories = await models.Category.findAll();
-    const users = await models.User.findAll();
-    
-    models.Post.findByPk(
-        req.params.post_id,
-        {
-            include:
-            [
-                        {
-                            model: models.Department 
-                        },
-                        {
-                            model: models.User 
-                        },
-                        {
-                            model: models.CurrentBusiness
-                        },
-                        
-            ]
-        }
-    ).then(function(post) {
-        console.log('this is post user ' + post.User.first_name);
-        // renders a post form
-        res.render('pages/content', {
-            title: 'Update Post',
-            categories: categories,
-            post: post,
-            users: users,
-            // departments: departments,
-            // currentBusinesses: currentBusinesses,
-            functioName: 'GET POST UPDATE',
-            layout: 'layouts/detail'
-        });
-        console.log("Post update get successful");
-    });
-
-};
-
-
-// Handle post update on POST.
-exports.postPostUpdate = async function(req, res, next) {
-    
-    console.log("ID is " + req.params.post_id);
-
-    // find the post
-    const post = await models.Post.findByPk(req.params.post_id);
-
-    var actionType = 'update';
-     
-    // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-    var updateCategories = await CreateOrUpdateCategories (req, res, post, actionType);
-    
-    if(!updateCategories){
-        return res.status(422).json({ status: false,  error: 'Error occured while adding Categories to post'});
-    }
-    
-    console.log('Post Updated Successfully');
-
-    // now update
-    models.Post.update(
-        // Values to update
-        {
-            post_title: req.body.post_title,
-            post_body: req.body.post_body,
-            UserId: req.body.user_id
-        }, { // Clause
+        // delete post 
+        await models.Post.destroy({
+            // find the post_id to delete from database
             where: {
                 id: req.params.post_id
             }
-        }
-        //   returning: true, where: {id: req.params.post_id} 
-    ).then(function() {
-        // If an post gets updated successfully, we just redirect to posts list
-        // no need to render a page
-        res.redirect("/main/posts");
-        console.log("Post updated successfully");
-    });
+        })
+        //Success Response
+        success_res( res, 'Post deleted successfully');
+            console.log("Post deleted successfully");
+        
+    } catch (error) {
+        error_res( res, error );
+    }
+    
+    
 };
 
+// Handle post update on POST.
+exports.postPostUpdate = async (req, res, next) => {
+    try {
+        console.log("ID is " + req.params.post_id);
+
+        // find the post
+        const post = await models.Post.findByPk(req.params.post_id);
+
+        const actionType = 'update';
+        
+        // INSERT PERMISSION MANY TO MANY RELATIONSHIP
+        const updateCategories = await CreateOrUpdateCategories (req, res, post, actionType);
+        
+        if(!updateCategories){
+            return res.status(422).json({ status: false,  error: 'Error occured while adding Categories to post'});
+        }
+        
+        console.log('Post Updated Successfully');
+
+        // now update
+        const data = await models.Post.update(
+            // Values to update
+            {
+                post_title: req.body.post_title,
+                post_body: req.body.post_body,
+                UserId: req.body.user_id
+            }, { // Clause
+                where: {
+                    id: req.params.post_id
+                }
+            }
+            //   returning: true, where: {id: req.params.post_id} 
+        )
+            //Success Response
+            success_res( res, 'Post updated successfully' );
+            console.log("Post updated successfully");
+    
+    } catch (error) {
+        error_res( res, error );
+    }
+    
+};
 
 // Display detail page for a specific post.
-exports.getPostDetails = async function(req, res, next) {
+exports.getPostDetails = async (req, res, next) => {
+    try {
+        console.log("I am in post details")
+        // find a post by the primary key Pk
+        const post = await models.Post.findByPk(
+            req.params.post_id, {
+                include: [
+                    
+                    {
+                        model: models.User,
+                        attributes: ['id', 'first_name', 'last_name']
+                    },
+                    {
+                        model: models.Department,
+                        attributes: ['id', 'department_name']
+                    },
+                    {
+                        model: models.CurrentBusiness,
+                        attributes: ['id', 'current_business_name']
+                    },
+                    {
+                        model: models.Category,
+                        as: 'categories',
+                        required: false,
+                        // Pass in the Category attributes that you want to retrieve
+                        attributes: ['id', 'category_name']
+                    }
+
+                ]
+
+            }
+        )        
+            //Success Response 
+            success_res_with_data( res, 'Post Details', post );
+            console.log("Post details renders successfully");
     
-    console.log("I am in post details")
-    // find a post by the primary key Pk
-    models.Post.findByPk(
-        req.params.post_id, {
+    } catch (error) {
+        error_res( res, error );
+    }
+    
+};
+                       
+// Display list of all posts.
+exports.getPostList = async (req, res, next) => {
+    try {
+        // controller logic to display all posts
+        const posts = await models.Post.findAll({
+        
+            // Make sure to include the categories
             include: [
-                
                 {
                     model: models.User,
-                    attributes: ['id', 'first_name', 'last_name']
-                },
-                {
-                    model: models.Department,
-                    attributes: ['id', 'department_name']
-                },
-                {
-                    model: models.CurrentBusiness,
-                    attributes: ['id', 'current_business_name']
+                    attributes: ['id', 'first_name', 'last_name'],                
                 },
                 {
                     model: models.Category,
                     as: 'categories',
-                    required: false,
-                    // Pass in the Category attributes that you want to retrieve
                     attributes: ['id', 'category_name']
+                },
+                
+                {
+                    model: models.Department
+                },
+                {
+                    model: models.CurrentBusiness
                 }
-
             ]
 
-        }
-    ).then(async function(post) {
-        console.log(post)
-        res.render('pages/content', {
-            title: 'Post Details',
-            functioName: 'GET POST DETAILS',
-            post: post,
-            layout: 'layouts/detail'
         });
-        console.log("Post details renders successfully");
-    });
-};
-
-     
-                        
-// Display list of all posts.
-exports.getPostList = function(req, res, next) {
-    // controller logic to display all posts
-    models.Post.findAll({
-      
-        // Make sure to include the categories
-        include: [
-            {
-                model: models.User,
-                attributes: ['id', 'first_name', 'last_name'],                
-            },
-            {
-                model: models.Category,
-                as: 'categories',
-                attributes: ['id', 'category_name']
-            },
+            //Success Response
+            console.log(posts);
+            success_res_with_data( res, 'Post List', posts )
             
-            {
-                model: models.Department
-            },
-            {
-                model: models.CurrentBusiness
-            }
-        ]
-
-    }).then(function(posts) {
-        // renders a post list page
-        console.log(posts);
-        console.log("rendering post list");
-        res.render('pages/content', {
-            title: 'Post List',
-            functioName: 'GET POST LIST',
-            posts: posts,
-            layout: 'layouts/list'
-        });
-        console.log("Posts list renders successfully");
-    });
+            console.log("Posts list renders successfully");
+        
+    } catch (error) {
+        error_res( res, error );
+    }
+    
 
 };
 
-exports.getPostListByDepartment = async function(req, res, next) {
-    
-     
+exports.getPostListByDepartment = async (req, res, next) => {
 
 };
  
 
-exports.getPostListByEmail = async function(req, res, next) {
-    
-    
+exports.getPostListByEmail = async (req, res, next) => {
+   
 };
  
 async function CreateOrUpdateCategories(req, res, post, actionType) {

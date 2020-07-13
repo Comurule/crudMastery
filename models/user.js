@@ -1,92 +1,109 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var User = sequelize.define('User', {
+  const User = sequelize.define('User', {
     first_name: DataTypes.STRING,
     last_name: DataTypes.STRING,
-    username: DataTypes.STRING,
-           username: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-            validate: {
-              len: [3, 50] // must be between 8 and 50.
-            }
-        },
-        
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: false,
-            validate: {
-                isEmail: true
-            }
-            // ,primaryKey: true
-        },
+    username: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      validate: {
+        len: [3, 50] // must be between 3 and 50.
+      }
+    },
 
-        password: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false,
+      validate: {
+        isEmail: true
+      }
+    },
 
-        last_login: {
-            type: DataTypes.DATE
-        },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
 
-        status: {
-            type: DataTypes.ENUM('active', 'inactive'),
-            defaultValue: 'active'
-        },
-        
-        // you can also write in a single line without issues
-        name:{type: DataTypes.STRING, unique: false},
-        module_name: {type: DataTypes.STRING},
-        module_id : {type: DataTypes.INTEGER},
-        account_id : {type: DataTypes.STRING}
+    last_login: {
+      type: DataTypes.DATE
+    },
+    isLead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },//Added this to Upgrade a user to a lead 
+    //I believe whoever handles Customers should 
+    //another field to activate A customer
+
+    status: {
+      type: DataTypes.ENUM('active', 'inactive'),
+      defaultValue: 'active'
+    },
+
+    // you can also write in a single line without issues
+    permission: { type: DataTypes.STRING },
+    module_name: { type: DataTypes.STRING },
+    module_id: { type: DataTypes.INTEGER },
+    account_id: { type: DataTypes.STRING }
+
   });
 
- 
-  User.associate = function (models) {
-    
+
+  User.associate = (models) => {
+
     models.User.hasMany(models.Post);
-    
+
     models.User.belongsTo(models.Department, {
-    allowNull: true
+      allowNull: true
     });
-    
+
     models.User.belongsTo(models.Profile, {
-    allowNull: true
+      allowNull: true
     });
-    
+
     models.User.belongsTo(models.Role, {
-    allowNull: true
+      allowNull: true
     });
-    
-    // a current business can have many users
-    // a user belongs to a current business
-    // this is not the final relationship between user and current business, 
-    // but for simplicity lets leave it this way
+
     models.User.belongsTo(models.CurrentBusiness, {
-    allowNull: true
+      allowNull: true
+    });
+
+    models.User.hasMany(models.CampaignData, {
+      foreignKey: {
+        name: 'userId',
+        allowNull: false
+      }
     });
     
-    
-    // models.User.belongsToMany(models.CurrentBusiness,{ 
-    //   as: 'currentbusinesses', 
-    //   through: 'UserCurrentBusinesses',
-    //   foreignKey: 'user_id' //email
-    // });
-    
-    
-    // create association between permission and user
-    // a permission can have many users
-    // a user can have many permissions
-    models.User.belongsToMany(models.Permission,{ 
-      as: 'permissions', 
-      through: 'UserPermissions',
-      foreignKey: 'user_id'
+    models.User.hasMany(models.LeadCampaign, {
+      foreignKey: {
+        name: 'leadId',
+        allowNull: false
+      }
     });
-        
+
+    models.User.belongsToMany(models.Campaign, {
+      as: 'campaigns',
+      through: 'CampaignMembers',
+      onDelete: 'CASCADE',
+      foreignKey: 'userId'
+    });
+
+    models.User.belongsToMany(models.Preference, {
+      as: 'preferences',
+      through: 'LeadPreferences',
+      foreignKey: 'userId'
+    });
+
+    
+      models.User.belongsToMany(models.Permission,{ 
+        as: 'permissions', 
+        through: 'UserPermissions',
+        foreignKey: 'user_id'
+      });
+
   };
-  
+
   return User;
 };
- 

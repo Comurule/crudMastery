@@ -16,13 +16,13 @@ const{
 
 // Handle User create on POST.
 exports.postUserCreate = async(req, res, next) => {
-    
+    console.log(req.body);
     // create User POST controller logic here
     // If an User gets created successfully, we just redirect to Users list
     // no need to render a page
   
     try {
-       const user = await models.User.create({
+        var user = await models.User.create({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             email: req.body.email,
@@ -35,10 +35,10 @@ exports.postUserCreate = async(req, res, next) => {
 
         console.log("The user id " + user.id);
         
-        const actionType = 'create';
+        var actionType = 'create';
         
         // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-        const addPermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
+        var addPermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
         
         if(!addPermissions){
             return res.status(422).json({ status: false,  error: 'Error occured while adding Permissions'});
@@ -56,7 +56,7 @@ exports.postUserCreate = async(req, res, next) => {
         console.log("There was an error " + error);
         // remove the user that was created so we don't have a user without permission.
         models.User.destroy({ where: {id: user.id}});
-        // now render error page
+        
         error_res( res, error );
         
     }
@@ -83,7 +83,7 @@ exports.getUserDelete = (req, res, next) => {
     
 };
  
-exports.postUserUpdate = async(req, res, next) => {
+exports.postUserUpdate = async function(req, res, next) {
     console.log("ID is " + req.params.user_id);
     console.log("first_name is " +req.body.first_name);
     console.log("last_name is " + req.body.last_name);
@@ -114,14 +114,14 @@ exports.postUserUpdate = async(req, res, next) => {
         );
         
         
-        const user = await models.User.findByPk(req.params.user_id);
+        var user = await models.User.findByPk(req.params.user_id);
         
         console.log('this is user from update ' + user + 'id' + user.id);
         
-        const actionType = 'update';
+        var actionType = 'update';
          
         // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-        const updatePermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
+        var updatePermissions = await CreateOrUpdatePermissions (req, res, user, actionType);
         
         if(!updatePermissions){
             return res.status(422).json({ status: false,  error: 'Error occured while adding Permissions'});
@@ -130,15 +130,12 @@ exports.postUserUpdate = async(req, res, next) => {
         console.log('User Updated Successfully');
     
          // everything done, now redirect....to user created page.
-         success_res_with_data(
-             res, 'User account updated successfully.', user
-         )
+        success_res_with_data( res, 'User updated successfully', user );
 
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
-        error_res( res, error)
-        
+        error_res( res, error );
     }
 };
 
@@ -189,15 +186,13 @@ exports.getUserDetails = async (req, res, next) =>{
 };
 
 // Display list of all Users.
-exports.getUserList = async(req, res, next) => {
+exports.getUserList = (req, res, next) => {
     try {
-        const users = models.User.findAll();
-        console.log("rendering user list");
-
-        //Success Response
-        success_res_with_data( res, 'User List', users );
-        
-        console.log("Users list renders successfully");
+        models.User.findAll().then(async function(users) {
+            console.log("rendering user list");
+            success_res_with_data( res, 'User List', users );
+            console.log("Users list renders successfully");
+        });
       
     } catch (error) {
         error_res( res, error );
@@ -208,13 +203,13 @@ exports.getUserList = async(req, res, next) => {
  
  
 //I need to study this....
-exports.CreateOrUpdatePermissions = async (req, res, user, actionType) => {
+async function CreateOrUpdatePermissions(req, res, user, actionType) {
 
     let permissionList = req.body.permissions;
     
     console.log(permissionList);
     
-    console.log('type of permission list is ' + typeof(permissionList));
+    console.log('type of permission list is ' + typeof permissionList);
     
     // I am checking if permissionList exist
     if (permissionList) { 

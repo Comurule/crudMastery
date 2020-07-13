@@ -12,16 +12,16 @@
 const express = require('express');
 const router = express.Router();
 
-const aboutController = require('../controllers/apiContollers/aboutController');
-const currentBusinessController = require('../controllers/apiContollers/currentBusinessController');
-const departmentController = require('../controllers/apiContollers/departmentController');
-const postController = require('../controllers/apiContollers/postController');
-const profileController = require('../controllers/apiContollers/profileController');
-const roleController = require('../controllers/apiContollers/roleController');
-const userController = require('../controllers/apiContollers/userController');
-const categoryController = require('../controllers/apiContollers/categoryController');
-const permissionController = require('../controllers/apiContollers/permissionController');
-const indexController = require('../controllers/apiContollers/indexController');
+const aboutController = require('../controllers/apiControllers/aboutController');
+const currentBusinessController = require('../controllers/apiControllers/currentBusinessController');
+const departmentController = require('../controllers/apiControllers/departmentController');
+const postController = require('../controllers/apiControllers/postController');
+const profileController = require('../controllers/apiControllers/profileController');
+const roleController = require('../controllers/apiControllers/roleController');
+const userController = require('../controllers/apiControllers/userController');
+const categoryController = require('../controllers/apiControllers/categoryController');
+const permissionController = require('../controllers/apiControllers/permissionController');
+const indexController = require('../controllers/apiControllers/indexController');
 
 const { getAllPostsByDept, getAllPostsByUsername, 
     getAllPostsByUsernameByDept, getAllUsersByRole,
@@ -30,7 +30,7 @@ const { getAllPostsByDept, getAllPostsByUsername,
     getAllPostsByUserInCurrentBusinessInDept,
     getAllPostsForCurrentBusiness,
     getAllPostsByUserInCurrentBusinessInDeptInRoleInProfile,
-} = require('../controllers/apiContollers/specialController');
+} = require('../controllers/apiControllers/specialController');
 
 console.log("I am in api/v1 routes");
 

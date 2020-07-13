@@ -3,7 +3,7 @@ const config = require('./config.global');
 config.env = 'development';
 config.hostname = 'manifestdbinstance.cgq0reqixqsd.us-east-1.rds.amazonaws.com';
 config.db = {
-    database: 'teamcomuruledb1',
+    database: 'leadCampaign',
     username: 'manifestUser',
     password: 'manifestPassword',
     host: "manifestdbinstance.cgq0reqixqsd.us-east-1.rds.amazonaws.com",
