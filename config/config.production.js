@@ -4,7 +4,7 @@ config.env = 'production';
 config.hostname = process.env.DB_HOSTNAME;
 
 config.db = {
-    database: 'teamcomuruledb1',
+    database: 'leadCampaign',
     username: 'manifestUser',
     password: 'manifestPassword',
     host: "manifestdbinstance.cgq0reqixqsd.us-east-1.rds.amazonaws.com",
