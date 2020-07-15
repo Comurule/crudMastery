@@ -33,6 +33,14 @@ app.use('/main', main);
 app.use('/api/v1', api_main);
 app.use('/api/v1', api_lead);
 
+//Page Not Found 
+app.use( '*', ( req, res) => {
+  res.status(404)
+    .send({
+      status: false,
+      error: 'Page Not Found'
+    })
+})
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
