@@ -83,12 +83,12 @@ module.exports = (sequelize, DataTypes) => {
       }
     });
 
-    models.User.belongsToMany(models.Campaign, {
-      as: 'campaigns',
-      through: 'CampaignMembers',
-      onDelete: 'CASCADE',
-      foreignKey: 'userId'
-    });
+    // models.User.belongsToMany(models.Campaign, {
+    //   as: 'campaigns',
+    //   through: 'CampaignMembers',
+    //   onDelete: 'CASCADE',
+    //   foreignKey: 'userId'
+    // });
 
     models.User.belongsToMany(models.Preference, {
       as: 'preferences',

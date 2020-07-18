@@ -8,21 +8,15 @@ exports.createPreference = async (req, res) => {
     
     //To check against empty fields
     if(!preferenceCenter || preferenceCenter == '') 
-        errorRes(
-            res,
-            'Ensure all fields are filled'
-        )
+        errorRes( res, 'Ensure all fields are filled' )
     try {
         //check if there is a duplicate in the database
-        const info = await Preference.findOne({ 
+        const checkPreference = await Preference.findOne({ 
             where: { preference: preferenceCenter } 
         });
 
-        if( info ) {
-            errorRes( 
-                res, 
-                'This Preference already exists in the database.' 
-            );
+        if( checkPreference ) {
+            errorRes( res, 'This Preference already exists in the database.' );
         } else {
         
             const preference = await Preference.create({ preference:preferenceCenter });
@@ -30,11 +24,7 @@ exports.createPreference = async (req, res) => {
             const data = await preference;
 
             //Success response
-            successResWithData( 
-                res, 
-                'Preference created successfully.', 
-                data 
-            );
+            successResWithData( res, 'Preference created successfully.', data );
         }
     } catch (error) {
         console.log(error);
@@ -52,11 +42,11 @@ exports.updatePreference = async (req, res) => {
     );
     try {
         //check if there is a duplicate in the database
-        const info = await Preference.findOne({ 
+        const checkPreference = await Preference.findOne({ 
             where: { preference:preferenceCenter } 
         });
 
-        if(info && info.id != req.params.preferenceId) {
+        if(checkPreference && checkPreference.id != req.params.preferenceId) {
             errorRes( 
                 res, 
                 'This Preference already exists in the database.' 

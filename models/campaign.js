@@ -35,12 +35,12 @@ module.exports = (sequelize, DataTypes) => {
   // create association between user and role
   // a can have many users
   Campaign.associate = (models) => {
-    models.Campaign.belongsToMany(models.User, {
-      as: 'users',
-      through: 'CampaignMembers',
-      onDelete: 'CASCADE',
-      foreignKey: 'campaignId'
-    });
+    // models.Campaign.belongsToMany(models.User, {
+    //   as: 'users',
+    //   through: 'CampaignMembers',
+    //   onDelete: 'CASCADE',
+    //   foreignKey: 'campaignId'
+    // });
 
     models.Campaign.hasMany(models.CampaignData, {
       foreignKey: {

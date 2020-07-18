@@ -3,24 +3,25 @@ const router = express.Router();
 
 const { 
     createCampaign, updateCampaign, deleteCampaign, getCampaign, getAllCampaign 
-} = require('../controllers/apiControllers/campaign');
+} = require('../controllers/apiControllers/campaignController');
 const { 
     createPreference, updatePreference, deletePreference, 
     getPreference, getAllPreference 
-} = require('../controllers/apiControllers/preference');
+} = require('../controllers/apiControllers/preferenceController');
 const { 
     createCampaignData, updateCampaignData, deleteCampaignData, 
     getCampaignData, getAllCampaignData 
-} = require('../controllers/apiControllers/campaignData');
+} = require('../controllers/apiControllers/campaignDataController');
 const { 
     createLeadCampaign, updateLeadCampaign, deleteLeadCampaign, 
     getLeadCampaign, getAllLeadCampaign 
-} = require('../controllers/apiControllers/leadCampaign');
+} = require('../controllers/apiControllers/leadCampaignController');
 const { 
     createLeadCampaignData, updateLeadCampaignData, 
     deleteLeadCampaignData, getLeadCampaignData, 
     getAllLeadCampaignData 
-} = require('../controllers/apiControllers/leadCampaignData');
+} = require('../controllers/apiControllers/leadCampaignDataController');
+const { createLead, updateLead, deleteLead, getAllLeads, getLead } = require('../controllers/apiControllers/leadController');
 
 
 
@@ -80,6 +81,18 @@ router.get('/leadCampaignData/:leadCampaignDataId/delete', deleteLeadCampaignDat
 router.get('/leadCampaignData/:leadCampaignDataId', getLeadCampaignData);
 
 router.get('/leadCampaignData', getAllLeadCampaignData);
+
+// LEAD ROUTES
+
+router.post('/leads/create', createLead); 
+
+router.post('/leads/:leadId/update', updateLead); 
+
+router.get('/leads/:leadId/delete', deleteLead); 
+
+router.get('/leads/:leadId', getLead); 
+
+router.get('/leads', getAllLeads);
 
 
 module.exports = router;
