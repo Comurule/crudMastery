@@ -27,12 +27,12 @@ exports.createLead = async(req, res) => {
     //check for empty fields
     if( 
         !firstName || !lastName || !email || !username || !password || !address ||
-        !city || !country || !leadCurrency || !leadLanguage || !leadStatus || 
+        !city || !country || !leadCurrency || !leadLanguage  || 
         !companyName || !companyEmail || !companyWebsite || !companyAddress ||
         !companyCity || !companyCountry || !createdBy || !modifiedBy ||
         firstName == '' || lastName == '' || email == '' || username == '' || 
         password == '' || address == '' || city == '' || country == '' ||
-        leadCurrency == '' || leadLanguage == '' || leadStatus == '' || 
+        leadCurrency == '' || leadLanguage == '' ||  
         companyName == '' || companyEmail == '' || companyWebsite == '' ||
         companyAddress == '' || companyCity == '' || companyCountry == '' ||
         createdBy == '' || modifiedBy == ''
@@ -56,10 +56,10 @@ exports.createLead = async(req, res) => {
         if(checkLead) {
             errorRes( res, 'This Email has been used...')
         }else{
-            leadCurrency = leadCurrency.toUpperCase();
+            // set the model to always accept (leadCurrency.toUpperCase());
             const createdLead = await Lead.create({
                 firstName, lastName, email, username, password, address, city, country,
-                leadCurrency, leadLanguage, leadStatus, companyName, companyEmail, companyWebsite,
+                leadCurrency, leadLanguage, companyName, companyEmail, companyWebsite,
                 companyAddress, companyCity, companyCountry, createdBy, modifiedBy                
             })
 
@@ -79,19 +79,19 @@ exports.updateLead = async(req, res) => {
     
     const { 
         firstName, lastName, email, username, password, address, city, country,
-        leadCurrency, leadLanguage, leadStatus, companyName, companyEmail, companyWebsite,
+        leadCurrency, leadLanguage, companyName, companyEmail, companyWebsite,
         companyAddress, companyCity, companyCountry, createdBy, modifiedBy
     } = req.body;
 
     //check for empty fields
     if( 
         !firstName || !lastName || !email || !username || !password || !address ||
-        !city || !country || !leadCurrency || !leadLanguage || !leadStatus || 
+        !city || !country || !leadCurrency || !leadLanguage ||
         !companyName || !companyEmail || !companyWebsite || !companyAddress ||
         !companyCity || !companyCountry || !createdBy || !modifiedBy ||
         firstName == '' || lastName == '' || email == '' || username == '' || 
         password == '' || address == '' || city == '' || country == '' ||
-        leadCurrency == '' || leadLanguage == '' || leadStatus == '' || 
+        leadCurrency == '' || leadLanguage == '' || 
         companyName == '' || companyEmail == '' || companyWebsite == '' ||
         companyAddress == '' || companyCity == '' || companyCountry == '' ||
         createdBy == '' || modifiedBy == ''
@@ -112,14 +112,14 @@ exports.updateLead = async(req, res) => {
     try {
         //check for duplicate in the database
         const checkLead = await Lead.findOne({ where: { email }  });
-        if( checkLead || checkLead.id != req.params.leadId ) {
+        if( checkLead && checkLead.id != req.params.leadId ) {
             errorRes( res, 'This Email has been used...')
         }else{
-            leadCurrency = leadCurrency.toUpperCase();
+            
             const updatedLead = await Lead.update(
                 {
                     firstName, lastName, email, username, password, address, city, country,
-                    leadCurrency, leadLanguage, leadStatus, companyName, companyEmail, companyWebsite,
+                    leadCurrency, leadLanguage, companyName, companyEmail, companyWebsite,
                     companyAddress, companyCity, companyCountry, createdBy, modifiedBy                
                 }, { 
                     where: { id: req.params.leadId }  
