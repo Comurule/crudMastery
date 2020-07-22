@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var models = require('../../models');
 
 // Display profile create form on GET.
 exports.getProfileCreate = function(req, res, next) {

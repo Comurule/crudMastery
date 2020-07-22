@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var models = require('../../models');
 
 
 // Display department create form on GET.

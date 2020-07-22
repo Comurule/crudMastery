@@ -89,14 +89,7 @@ module.exports = (sequelize, DataTypes) => {
     //   onDelete: 'CASCADE',
     //   foreignKey: 'userId'
     // });
-
-    models.User.belongsToMany(models.Preference, {
-      as: 'preferences',
-      through: 'LeadPreferences',
-      foreignKey: 'userId'
-    });
-
-    
+  
       models.User.belongsToMany(models.Permission,{ 
         as: 'permissions', 
         through: 'UserPermissions',

@@ -1,4 +1,4 @@
-var models = require('../models');
+var models = require('../../models');
  
 // Display category create form on GET.
 exports.getCategoryCreate = function(req, res, next) {

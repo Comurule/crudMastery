@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var {Role} = require('../models');
+var {Role} = require('../../models');
 
 // Display role create form on GET.
 exports.getRoleCreate = function(req, res, next) {

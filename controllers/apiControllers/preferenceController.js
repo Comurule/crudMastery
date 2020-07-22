@@ -1,25 +1,34 @@
-const { Preference } = require('../../models');
+const { PreferenceCenter, Lead } = require('../../models');
 const { 
     errorRes, errorLog, successResWithData, successRes 
-} = require('../../utils/apiResponse1');
+} = require('../../utils/apiResponse');
 
 exports.createPreference = async (req, res) => {
-    const { preferenceCenter } = req.body;
+    const { name, tier, parentPC, pcCode, displayType } = req.body;
     
     //To check against empty fields
-    if(!preferenceCenter || preferenceCenter == '') 
+    if(!name || !tier || !pcCode || !displayType ||
+        name == '' || tier == '' || pcCode == '' || displayType == ''    
+    ) 
         errorRes( res, 'Ensure all fields are filled' )
     try {
+        // check if the parentPC is valid
+        if(parentPC && parentPC != '') {
+            const parentPreference = await PreferenceCenter.findByPk(parentPC)
+            if(!parentPreference)errorRes( res, 'Invalid Parent Preference Center Input.')
+        }
+        
         //check if there is a duplicate in the database
-        const checkPreference = await Preference.findOne({ 
-            where: { preference: preferenceCenter } 
+        const checkPreference = await PreferenceCenter.findOne({ 
+            where: { name } 
         });
-
         if( checkPreference ) {
-            errorRes( res, 'This Preference already exists in the database.' );
+            errorRes( res, 'This Preference Center already exists in the database.' );
         } else {
         
-            const preference = await Preference.create({ preference:preferenceCenter });
+            const preference = await PreferenceCenter.create({ 
+                name, tier, parentPC: (parentPC == '')? null : parentPC, pcCode, displayType 
+            });
 
             const data = await preference;
 
@@ -33,33 +42,37 @@ exports.createPreference = async (req, res) => {
 };
 
 exports.updatePreference = async (req, res) => {
-    const { preferenceCenter } = req.body;
-
+    const { name, tier, parentPC, pcCode, displayType } = req.body;
+    
     //To check against empty fields
-    if(!preferenceCenter || preferenceCenter == '') errorRes(
-        res,
-        'Ensure all fields are filled'
-    );
+    if(!name || !tier || !pcCode || !displayType ||
+        name == '' || tier == '' || pcCode == '' || displayType == ''    
+    ) 
+        errorRes( res, 'Ensure all fields are filled' )
     try {
+        // check if the parentPC is valid
+        if(parentPC && parentPC != '') {
+            const parentPreference = await PreferenceCenter.findByPk(parentPC)
+            if(!parentPreference)errorRes( res, 'Invalid Parent Preference Center Input.')
+        };
+
         //check if there is a duplicate in the database
-        const checkPreference = await Preference.findOne({ 
-            where: { preference:preferenceCenter } 
+        const checkPreference = await PreferenceCenter.findOne({ 
+            where: { name } 
         });
 
         if(checkPreference && checkPreference.id != req.params.preferenceId) {
-            errorRes( 
-                res, 
-                'This Preference already exists in the database.' 
-            );
+            errorRes( res, 'This Preference already exists in the database.' );
+            
         } else {
     
-            await Preference.update({ 
-                preference: preferenceCenter 
+            await PreferenceCenter.update({ 
+                name, tier, parentPC: (parentPC == '')? null : parentPC, pcCode, displayType
             },{
                 where: { id: req.params.preferenceId }
             });
 
-            const preference = await Preference.findByPk( req.params.preferenceId )
+            const preference = await PreferenceCenter.findByPk( req.params.preferenceId )
 
             const data = await preference;
 
@@ -73,22 +86,20 @@ exports.updatePreference = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        errorLog( res, 'Error: Preference updare is Unsuccessful.')
+        errorLog( res, 'Preference Center Update is Unsuccessful.')
     }
 };
 
 exports.deletePreference = async (req, res) => {
     try {
-        //check if the id is valif
-        const check = await Preference.findByPk( req.params.preferenceId )
-        if(!check) errorRes(
-            res, 'Invalid Entry Details'
-        )
+        //check if the id is valid
+        const checkPreference = await PreferenceCenter.findByPk( req.params.preferenceId )
+        if(!checkPreference) return errorRes( res, 'Invalid Entry Details' );
 
-        await Preference.destroy({ where: { id: req.params.preferenceId } })
+        await PreferenceCenter.destroy({ where: { id: req.params.preferenceId } })
 
         //Success Response
-        successRes( res, 'Deletion Successful.' )
+        successRes( res, 'Preference Center deleted Successfully.' )
 
     } catch (error) {
         console.log(error);
@@ -101,16 +112,12 @@ exports.deletePreference = async (req, res) => {
 
 exports.getPreference = async (req, res) => {
     try {
-        const preference = await Preference.findByPk( req.params.preferenceId )
+        const preference = await PreferenceCenter.findByPk( req.params.preferenceId, { include: Lead });
         if(!preference) errorRes( res, 'Invalid Entry DEtails' )
 
         //Success Response
         const data = await preference
-        successResWithData( 
-            res,
-            'Preference Settings Details',
-            data
-        )
+        successResWithData( res, 'Preference Center Details', data );
 
     } catch (error) {
         console.log(error);
@@ -123,27 +130,13 @@ exports.getPreference = async (req, res) => {
 
 exports.getAllPreference = async (req, res) => {
     try {
-        const list = await Preference.findAll()
+        const preferenceList = await PreferenceCenter.findAll();
 
-        const data = await list
-        successResWithData(
-            res, 
-            'Preference Settings List',
-            data
-        )
+        const data = await preferenceList
+        successResWithData( res,'Preference Center List', data )
+
     } catch (error) {
         console.log(error);
-        errorLog(
-            res, 
-            'Error: Something went wrong.'
-        )
+        errorLog( res, 'Error: Something went wrong.' )
     }
-};
-
-exports.addPreference = async (req, res) => {
-
-}; //This is a User controller, to enable a user add alot of preference settingsS
-
-exports.removePreference = async (req, res) => {
-
 };

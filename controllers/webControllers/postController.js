@@ -1,5 +1,5 @@
-var Post = require('../models/post');
-var models = require('../models');
+var Post = require('../../models/post');
+var models = require('../../models');
 
 var async = require('async');
 

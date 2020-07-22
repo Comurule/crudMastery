@@ -7,8 +7,7 @@ const ejsLayouts = require('express-ejs-layouts');
 
 const index = require('./routes/index');
 const main = require('./routes/main');
-const api_main = require('./routes/api-main');
-const api_lead = require('./routes/api-lead');
+const apiRoutes = require('./routes/apiRoutes');
 
 const app = express();
 
@@ -30,8 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/main', main);
-app.use('/api/v1', api_main);
-app.use('/api/v1', api_lead);
+app.use('/api/v1', apiRoutes);
 
 //Page Not Found 
 app.use( '*', ( req, res) => {

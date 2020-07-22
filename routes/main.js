@@ -11,16 +11,16 @@
  */
 const express = require('express');
 const router = express.Router();
-const aboutController = require('../controllers/aboutController');
-const currentBusinessController = require('../controllers/currentBusinessController');
-const departmentController = require('../controllers/departmentController');
-const postController = require('../controllers/postController');
-const profileController = require('../controllers/profileController');
-const roleController = require('../controllers/roleController');
-const userController = require('../controllers/userController');
-const categoryController = require('../controllers/categoryController');
-const permissionController = require('../controllers/permissionController');
-const indexController = require('../controllers/indexController');
+const aboutController = require('../controllers/webControllers/aboutController');
+const currentBusinessController = require('../controllers/webControllers/currentBusinessController');
+const departmentController = require('../controllers/webControllers/departmentController');
+const postController = require('../controllers/webControllers/postController');
+const profileController = require('../controllers/webControllers/profileController');
+const roleController = require('../controllers/webControllers/roleController');
+const userController = require('../controllers/webControllers/userController');
+const categoryController = require('../controllers/webControllers/categoryController');
+const permissionController = require('../controllers/webControllers/permissionController');
+const indexController = require('../controllers/webControllers/indexController');
 
 const { getAllPostsByDept, getAllPostsByUsername, 
     getAllPostsByUsernameByDept, getAllUsersByRole,
@@ -29,7 +29,7 @@ const { getAllPostsByDept, getAllPostsByUsername,
     getAllPostsByUserInCurrentBusinessInDept,
     getAllPostsForCurrentBusiness,
     getAllPostsByUserInCurrentBusinessInDeptInRoleInProfile,
-} = require('../controllers/specialController');
+} = require('../controllers/webControllers/specialController');
 
 console.log("I am in main routes");
 

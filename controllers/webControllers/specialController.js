@@ -1,5 +1,5 @@
-const models = require('../models');
-const { error_render_with_msg, error_res, success_render } = require('../utils/webResponse');
+const models = require('../../models');
+const { error_render_with_msg, error_res, success_render } = require('../../utils/webResponse');
 
 //Get all Posts by Department name
 exports.getAllPostsByDept = async(req, res) => {

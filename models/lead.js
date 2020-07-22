@@ -25,12 +25,12 @@ module.exports = (sequelize, DataTypes) => {
     city: { type: DataTypes.STRING },
     country: { type: DataTypes.STRING },
 
-    leadCurrency: { 
-      type: DataTypes.STRING, 
+    leadCurrency: {
+      type: DataTypes.STRING,
       defaultValue: 'USD',
       validate: {
         len: [3, 4] // must be between 3 and 4.
-      } 
+      }
     },
     leadLanguage: { type: DataTypes.STRING, defaultValue: 'english' },
     leadStatus: {
@@ -66,61 +66,64 @@ module.exports = (sequelize, DataTypes) => {
   });
 
 
-  // Lead.associate = (models) => {
+  Lead.associate = (models) => {
 
-  //   models.Lead.hasMany(models.Post);
+    //   models.Lead.hasMany(models.Post);
 
-  //   models.Lead.belongsTo(models.Department, {
-  //     allowNull: true
-  //   });
+    //   models.Lead.belongsTo(models.Department, {
+    //     allowNull: true
+    //   });
 
-  //   models.Lead.belongsTo(models.Profile, {
-  //     allowNull: true
-  //   });
+    //   models.Lead.belongsTo(models.Profile, {
+    //     allowNull: true
+    //   });
 
-  //   models.Lead.belongsTo(models.Role, {
-  //     allowNull: true
-  //   });
+    //   models.Lead.belongsTo(models.Role, {
+    //     allowNull: true
+    //   });
 
-  //   models.Lead.belongsTo(models.CurrentBusiness, {
-  //     allowNull: true
-  //   });
+    //   models.Lead.belongsTo(models.CurrentBusiness, {
+    //     allowNull: true
+    //   });
 
-  //   models.Lead.hasMany(models.CampaignData, {
-  //     foreignKey: {
-  //       name: 'userId',
-  //       allowNull: false
-  //     }
-  //   });
-    
-  //   models.Lead.hasMany(models.LeadCampaign, {
-  //     foreignKey: {
-  //       name: 'leadId',
-  //       allowNull: false
-  //     }
-  //   });
+    //   models.Lead.hasMany(models.CampaignData, {
+    //     foreignKey: {
+    //       name: 'userId',
+    //       allowNull: false
+    //     }
+    //   });
 
-  //   // models.Lead.belongsToMany(models.Campaign, {
-  //   //   as: 'campaigns',
-  //   //   through: 'CampaignMembers',
-  //   //   onDelete: 'CASCADE',
-  //   //   foreignKey: 'userId'
-  //   // });
+    //   models.Lead.hasMany(models.LeadCampaign, {
+    //     foreignKey: {
+    //       name: 'leadId',
+    //       allowNull: false
+    //     }
+    //   });
 
-  //   models.Lead.belongsToMany(models.Preference, {
-  //     as: 'preferences',
-  //     through: 'LeadPreferences',
-  //     foreignKey: 'userId'
-  //   });
+    //   // models.Lead.belongsToMany(models.Campaign, {
+    //   //   as: 'campaigns',
+    //   //   through: 'CampaignMembers',
+    //   //   onDelete: 'CASCADE',
+    //   //   foreignKey: 'userId'
+    //   // });
 
-    
-  //     models.L.belongsToMany(models.Permission,{ 
-  //       as: 'permissions', 
-  //       through: 'UserPermissions',
-  //       foreignKey: 'user_id'
-  //     });
+    models.Lead.belongsToMany(models.PreferenceCenter, {
+      through: models.LeadPreference,
+      foreignKey: 'leadId'
+    });
 
-  // };
+    models.Lead.hasMany(models.LeadPreference, {
+      foreignKey: {
+        name: 'leadId'
+      }
+    });
+    //     models.L.belongsToMany(models.Permission,{ 
+    //       as: 'permissions', 
+    //       through: 'UserPermissions',
+    //       foreignKey: 'user_id'
+    //     });
+
+  };
 
   return Lead;
 };

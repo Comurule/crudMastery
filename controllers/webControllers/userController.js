@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var models = require('../../models');
 
 // Display User create form on GET.
 exports.getUserCreate = async function(req, res, next) {
@@ -96,8 +96,6 @@ exports.getUserDelete = function(req, res, next) {
     });
 };
  
- 
-
 // Display User update form on GET.
 exports.getUserUpdate = async function(req, res, next) {
     // Find the post you want to update

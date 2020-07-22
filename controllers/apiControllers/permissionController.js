@@ -1,9 +1,9 @@
 /**
  * Controller for Permission.
- * Author: Babatope Olajide.
+ * Author: Chibuike Umechukwu.
  * Version: 1.0.0
- * Release Date: 08-April-2020
- * Last Updated: 09-April-2020
+ * Release Date: 20-July-2020
+ * Last Updated: 22-July-2020
  */
 
 /**
